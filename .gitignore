@@ -1,0 +1,51 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Virtual environment
+venv/
+env/
+.venv/
+.env/
+
+# SQLite database
+*.db
+*.sqlite3
+
+# IDE settings
+.vscode/
+.idea/
+
+# Test reports
+htmlcov/
+.coverage
+.tox/
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+
+# Mypy
+.mypy_cache/
+.dmypy.json
+
+# Pytest cache
+.pytest_cache/
+
+# Logs
+*.log
+
+# dotenv environment variables
+.env
+.env.*
+
+# MacOS
+.DS_Store
+
+# Other
+*.pkl
+*.bak
