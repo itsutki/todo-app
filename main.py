@@ -1,18 +1,41 @@
-from fastapi import FastAPI, Depends, HTTPException
-from models.post import TodoCreate, TodoUpdate
-from models.response import TodoResponse
-from database import TodoDB, SessionLocal
+from fastapi import FastAPI, Depends, HTTPException, status
+from services.auth import get_password_hash
+from schemas.todos import TodoCreate, TodoUpdate, TodoResponse
+from schemas.users import UserCreate, UserResponse
+from models.todos import TodoDB
+from models.users import UserDB
 from typing import List
 from sqlalchemy.orm import Session
+from database import SessionLocal, Base, engine
 
 app = FastAPI()
 
+Base.metadata.create_all(bind=engine)
 def get_db(): #different sessions for each request
     db = SessionLocal()
     try:
         yield db
     finally:
         db.close()
+
+@app.post("/register",
+          response_model=UserResponse,
+          status_code=status.HTTP_201_CREATED,
+          summary="Register a new user"
+          )
+async def create_user(user: UserCreate, db:Session = Depends(get_db)):
+    """
+    Create a new user with a unique username and hashed password.
+    """
+    existing_user = db.query(UserDB).filter(UserDB.username == user.username).first()
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Username already registered")
+    hashed = get_password_hash(user.password)
+    new_user = UserDB(username = user.username, hashed_password = hashed)
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user
 
 
 @app.get("/{todo_id}", response_model=TodoResponse)
